@@ -7,7 +7,7 @@ function setAll(className, value) {
 
 // Helper function to turn part/total into a percentage string w/ 2 decimals 
 function pct(part, total) {
-	return math.format((part / total) * 100, { notation: 'fixed', precision: 2 }) + '%';
+	return ((part / total) * 100).toFixed(2) + '%';
 }
 
 
@@ -25,7 +25,8 @@ function parseTweets(runkeeper_tweets) {
 	
 	//This line modifies the DOM, searching for the tag with the numberTweets ID and updating the text.
 	//It works correctly, your task is to update the text of the other tags in the HTML file!
-	document.getElementById('numberTweets').innerText = tweet_array.length;	
+	const tweet_count = tweet_array.length
+	document.getElementById('numberTweets').innerText = tweet_count;	
 
 
 	// creating an array of the timestamps of all the tweets 
@@ -46,13 +47,13 @@ function parseTweets(runkeeper_tweets) {
 	
 	// Calculating the percentages & setting the count span 
 	setAll('completedEvents', completed);
-	setAll('completedEventsPct', pct(completed, total));
+	setAll('completedEventsPct', pct(completed, tweet_count));
 	setAll('liveEvents', live);
-	setAll('liveEventsPct', pct(live, total));
+	setAll('liveEventsPct', pct(live, tweet_count));
 	setAll('achievements', achievements);
-	setAll('achievementsPct', pct(achievements, total));
+	setAll('achievementsPct', pct(achievements, tweet_count));
 	setAll('miscellaneous', misc);
-	setAll('miscellaneousPct', pct(misc, total));
+	setAll('miscellaneousPct', pct(misc, tweet_count));
 
 	// written text (denominator = completed events only)
 	const written = tweet_array.filter(t => t.source === 'completed_event' && t.written).length;

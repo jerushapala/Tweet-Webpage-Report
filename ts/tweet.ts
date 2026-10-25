@@ -12,14 +12,16 @@ class Tweet {
         // DONE 
         //TODO: identify whether the source is a live event, an achievement, a completed event, or miscellaneous.
         const t = this.text; 
-        if (t.startsWith('Just completed') || t.startsWith('Just posted')){
+        if (t.startsWith('Just completed') || t.startsWith('I just completed') || 
+            t.startsWith('Completed a') || t.startsWith('Just posted')){
             return 'completed_event'; 
         }
-        if (t.startsWith('Just completed') || t.startsWith('Just posted')){
-            return 'completed_event'; 
+        if (t.startsWith('Watch my') || t.startsWith('right now')){
+            return 'live_event'; 
         }
-        if (t.startsWith('Achieved a new personal record') || t.startsWith('I just set a goal')){
-            return 'completed_event'; 
+        if (t.startsWith('Achieved a new personal record') || t.startsWith('I just set a goal') || 
+            t.startsWith('#Runkeeper Farthest Distance')){
+            return 'achievement'; 
         }
 
         return "miscellaneous";
