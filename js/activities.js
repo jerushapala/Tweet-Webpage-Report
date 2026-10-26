@@ -67,6 +67,55 @@ function parseTweets(runkeeper_tweets) {
 	});
 	const top_three = sorted_types.slice(0, 3);
 
+	// GRAPH #2: Distance by day of the week for the three most-tweeted activities
+
+	// One plain object per tweet. Vega-Lite can't see the getters on Tweet
+	// objects (my assumption, as with graph 1), so we copy the values into plain
+	// properties. This array is declared once so Graph #3 can reuse it.
+	
+	// array: we filter out the tweets that fall into the top 3 categories & get the distance 
+	// then create map: {tweet weekday, activity type, distance covered}
+	const distance_data = activity_tweets
+		.filter(function(t) {
+			// keep only the top three activity types, and only tweets with a real distance
+			return top_three.indexOf(t.activityType) !== -1 && t.distance > 0;
+		})
+		.map(function(t) {
+			return {
+				"time": t.time,               
+				"activity": t.activityType,
+				"distance": t.distance         // in miles
+			};
+		});
+
+	const distance_vis_spec = {
+	  "$schema": "https://vega.github.io/schema/vega-lite/v5.json",
+	  "description": "Distance by day of the week for the three most tweeted activities.",
+	  "data": {
+	    "values": distance_data
+	  },
+	  "mark": { "type": "point", "opacity": 0.5 },
+	  "encoding": {
+	    "x": {
+	      "field": "time",
+	      "timeUnit": "day", 
+	      "type": "ordinal",
+	      "title": "Day of the week"
+	    },
+	    "y": {
+	      "field": "distance",
+	      "type": "quantitative",
+	      "title": "Distance (miles)"
+	    },
+	    "color": {
+	      "field": "activity", 
+	      "type": "nominal",
+	      "title": "Activity type"
+	    }
+	  }
+	};
+	vegaEmbed('#distanceVis', distance_vis_spec, {actions:false});
+
 	// Calculate the mean distance in miles for the top 3 
 	// We skip the activity tweets with no distance 
 	const mean_distance = {};
