@@ -39,6 +39,8 @@ function parseTweets(runkeeper_tweets) {
 	activity_vis_spec = {
 	  "$schema": "https://vega.github.io/schema/vega-lite/v5.json",
 	  "description": "A graph of the number of Tweets containing each type of activity.",
+	  "width": 500, 
+	  "height": { "step": 16 }, 
 	  "data": {
 	    "values": activity_count_data
 	  },
@@ -48,7 +50,7 @@ function parseTweets(runkeeper_tweets) {
 	      "field": "count",
 	      "type": "quantitative",
 	      "title": "Number of tweets",
-	      "axis": { "orient": "top" }    // move the count axis (labels + title) to the top
+	      "axis": { "orient": "top" }  
 	    },
 	    "y": {
 	      "field": "activity",
@@ -68,10 +70,6 @@ function parseTweets(runkeeper_tweets) {
 	const top_three = sorted_types.slice(0, 3);
 
 	// GRAPH #2: Distance by day of the week for the three most-tweeted activities
-
-	// One plain object per tweet. Vega-Lite can't see the getters on Tweet
-	// objects (my assumption, as with graph 1), so we copy the values into plain
-	// properties. This array is declared once so Graph #3 can reuse it.
 	
 	// array: we filter out the tweets that fall into the top 3 categories & get the distance 
 	// then create map: {tweet weekday, activity type, distance covered}
@@ -91,6 +89,7 @@ function parseTweets(runkeeper_tweets) {
 	const distance_vis_spec = {
 	  "$schema": "https://vega.github.io/schema/vega-lite/v5.json",
 	  "description": "Distance by day of the week for the three most tweeted activities.",
+	  "width": 400, 
 	  "data": {
 	    "values": distance_data
 	  },
@@ -156,8 +155,58 @@ function parseTweets(runkeeper_tweets) {
 	document.getElementById('weekdayOrWeekendLonger').textContent = longer_on;
 
 
-	//TODO: create the visualizations which group the three most-tweeted activities by the day of the week.
-	//Use those visualizations to answer the questions about which activities tended to be longest and when.
+	// GRAPH #3: Same as Graph #2, except now we're only showing the MEAN distance per day per activity
+	const distance_mean_spec = {
+	  "$schema": "https://vega.github.io/schema/vega-lite/v5.json",
+	  "description": "Mean distance by day of the week for the three most tweeted activities.",
+	  "width": 400, 
+	  "data": {
+	    "values": distance_data          // same array as Graph #2
+	  },
+	  "mark": "point",           
+	  "encoding": {
+	    "x": {
+	      "field": "time",
+	      "timeUnit": "day",           
+	      "type": "ordinal",
+	      "title": "Day of the week"
+	    },
+	    "y": {
+	      "aggregate": "mean",           // average distance within each day + activity group
+	      "field": "distance",
+	      "type": "quantitative",
+	      "title": "Mean distance (miles)"
+	    },
+	    "color": {
+	      "field": "activity",          
+	      "type": "nominal",
+	      "title": "Activity type"
+	    }
+	  }
+	};
+	vegaEmbed('#distanceVisAggregated', distance_mean_spec, {actions:false});
+
+	// BUTTON: alternate between the two plots
+	const distance_div = document.getElementById('distanceVis');
+	const aggregated_div = document.getElementById('distanceVisAggregated');
+	const aggregate_button = document.getElementById('aggregate');
+
+	// Start with all points showing and the means hidden
+	aggregated_div.style.display = 'none';
+
+	aggregate_button.addEventListener('click', function() {
+		if (aggregated_div.style.display === 'none') {
+			// Means are hidden, so show them
+			distance_div.style.display = 'none';
+			aggregated_div.style.display = '';
+			aggregate_button.textContent = 'Show all activities';
+		} else {
+			// Means are showing, so go back to all points
+			aggregated_div.style.display = 'none';
+			distance_div.style.display = '';
+			aggregate_button.textContent = 'Show means';
+		}
+	});
 }
 
 //Wait for the DOM to load
