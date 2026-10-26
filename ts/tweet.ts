@@ -69,16 +69,51 @@ class Tweet {
         if (this.source != 'completed_event') {
             return "unknown";
         }
-        //TODO: parse the activity type from the text of the tweet
-        return "";
+
+        // Get the part of the text before the dash 
+        const dash_index = this.text.indexOf(' - '); 
+        var tweet_head = ""; 
+        if (dash_index === -1){
+            tweet_head = this.text
+        }
+        else {
+            tweet_head = this.text.substring(0, dash_index)
+        }
+        const match = tweet_head.match(/\ban?\s+(?:\d+(?:\.\d+)?\s*(?:km|mi)\s+)?(.+?)(?:\s+with\s|\s+in\s|\s+@\s|$)/i);
+        if (!match) {
+            return "unknown";
+        }
+
+
+        return match[1].trim().toLowerCase();
     }
 
     get distance():number {
         if(this.source != 'completed_event') {
             return 0;
         }
-        //TODO: prase the distance from the text of the tweet
-        return 0;
+        
+        const dash_index = this.text.indexOf(' - '); 
+        var tweet_head = ""; 
+        if (dash_index === -1){
+            tweet_head = this.text
+        }
+        else {
+            tweet_head = this.text.substring(0, dash_index)
+        }
+
+        // A number followed by km or mi. The \b stops "mi" from matching inside "min".
+        const match = tweet_head.match(/(\d+(?:\.\d+)?)\s*(km|mi)\b(?!\/)/i);        
+        if (!match) {
+            return 0; // no distance, e.g. meditation or spinning workout
+        }
+
+        var value = parseFloat(match[1]); 
+        if (match[2].toLowerCase() === 'km'){
+            value = value / 1.609
+        }
+
+        return value;
     }
 
     getHTMLTableRow(rowNumber:number):string {
