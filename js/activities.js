@@ -161,7 +161,7 @@ function parseTweets(runkeeper_tweets) {
 	  "description": "Mean distance by day of the week for the three most tweeted activities.",
 	  "width": 400, 
 	  "data": {
-	    "values": distance_data          // same array as Graph #2
+	    "values": distance_data // same array as Graph #2
 	  },
 	  "mark": "point",           
 	  "encoding": {
@@ -186,7 +186,7 @@ function parseTweets(runkeeper_tweets) {
 	};
 	vegaEmbed('#distanceVisAggregated', distance_mean_spec, {actions:false});
 
-	// BUTTON: alternate between the two plots
+	// button alternating between the plots 
 	const distance_div = document.getElementById('distanceVis');
 	const aggregated_div = document.getElementById('distanceVisAggregated');
 	const aggregate_button = document.getElementById('aggregate');
@@ -196,12 +196,10 @@ function parseTweets(runkeeper_tweets) {
 
 	aggregate_button.addEventListener('click', function() {
 		if (aggregated_div.style.display === 'none') {
-			// Means are hidden, so show them
 			distance_div.style.display = 'none';
 			aggregated_div.style.display = '';
 			aggregate_button.textContent = 'Show all activities';
 		} else {
-			// Means are showing, so go back to all points
 			aggregated_div.style.display = 'none';
 			distance_div.style.display = '';
 			aggregate_button.textContent = 'Show means';
